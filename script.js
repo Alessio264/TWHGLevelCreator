@@ -1038,16 +1038,25 @@ document.getElementById('modal-cancel').addEventListener('click',()=>{
 // HOME SCREEN
 // -------------------------------------------------------
 function showHomeScreen() {
+  // Main menu
   if (playMode) stopPlay();
   if (currentLevelIdx >= 0 && levelCollection.length > 0) saveCurrentEditorState();
   document.getElementById('editor-screen').classList.add('hidden');
+  document.getElementById('create-screen').classList.add('hidden');
+  document.getElementById('online-screen').classList.add('hidden');
   document.getElementById('home-screen').classList.remove('hidden');
+}
+
+function showCreateScreen() {
+  document.getElementById('home-screen').classList.add('hidden');
+  document.getElementById('create-screen').classList.remove('hidden');
   renderHomeScreen();
 }
 
 function openEditor(idx) {
   currentLevelIdx = idx;
   document.getElementById('home-screen').classList.add('hidden');
+  document.getElementById('create-screen').classList.add('hidden');
   document.getElementById('editor-screen').classList.remove('hidden');
   loadLevelIntoEditor(levelCollection[idx]);
 }
@@ -1131,6 +1140,8 @@ document.getElementById('home-btn-new').addEventListener('click', () => {
   levelCollection.push(lv);
   openEditor(levelCollection.length - 1);
 });
+
+document.getElementById('create-btn-back').addEventListener('click', showHomeScreen);
 
 // Import
 function openImportModal(onSuccess) {
@@ -1495,11 +1506,8 @@ function updateHUD() {
 // -------------------------------------------------------
 // HOME CTA BUTTONS
 // -------------------------------------------------------
-document.getElementById('home-btn-create').addEventListener('click', () => {
-  const lv = blankLevelData('Level ' + (levelCollection.length + 1));
-  levelCollection.push(lv);
-  openEditor(levelCollection.length - 1);
-});
+document.getElementById('home-btn-create').addEventListener('click', showCreateScreen);
+document.getElementById('home-btn-online').addEventListener('click', showOnlineScreen);
 
 // -------------------------------------------------------
 // ONLINE LEVELS  (uses JSONBlob as free cloud storage)
@@ -1521,7 +1529,6 @@ function hideOnlineScreen() {
   document.getElementById('home-screen').classList.remove('hidden');
 }
 
-document.getElementById('home-btn-online').addEventListener('click', showOnlineScreen);
 document.getElementById('online-btn-back').addEventListener('click', hideOnlineScreen);
 
 async function loadOnlineLevels() {
@@ -1533,7 +1540,7 @@ async function loadOnlineLevels() {
   loadingEl.classList.remove('hidden');
 
   // Try to get blob ID from localStorage
-  let blobId = localStorage.getItem('whg-blob-id');
+  let blobId = localStorage.getItem('dodgefield-blob-id');
   if (!blobId) {
     loadingEl.classList.add('hidden');
     emptyEl.classList.remove('hidden');
@@ -1638,96 +1645,123 @@ function startPlayOnline(lv, idx) {
   animFrameId = requestAnimationFrame(ts => { lastTime = ts; gameLoop(ts); });
 }
 
-// Upload
-document.getElementById('online-btn-upload').addEventListener('click', () => {
+// -------------------------------------------------------
+// UPLOAD WIZARD (multi-step)
+// -------------------------------------------------------
+function openUploadWizard() {
   document.getElementById('upload-modal').classList.remove('hidden');
+  showUploadStep(1);
   document.getElementById('upload-textarea').value = '';
   document.getElementById('upload-preview').classList.add('hidden');
-});
-document.getElementById('upload-btn-cancel').addEventListener('click', () => {
+  document.getElementById('upload-error').classList.add('hidden');
+  document.getElementById('upload-author').value = '';
+  document.getElementById('upload-collection-id').value = '';
+}
+function closeUploadWizard() {
   document.getElementById('upload-modal').classList.add('hidden');
-});
+}
+function showUploadStep(n) {
+  [1,2,3,4].forEach(i => {
+    document.getElementById(`upload-step-${i}`).classList.toggle('hidden', i !== n);
+  });
+}
+
+document.getElementById('online-btn-upload').addEventListener('click', openUploadWizard);
+document.getElementById('upload-btn-cancel-1').addEventListener('click', closeUploadWizard);
+document.getElementById('upload-step1-next').addEventListener('click', () => showUploadStep(2));
+document.getElementById('upload-step2-back').addEventListener('click', () => showUploadStep(1));
+document.getElementById('upload-step3-back').addEventListener('click', () => showUploadStep(2));
+
 document.getElementById('upload-textarea').addEventListener('input', e => {
   const val = e.target.value.trim();
   const prev = document.getElementById('upload-preview');
-  if (!val) { prev.classList.add('hidden'); return; }
+  const err  = document.getElementById('upload-error');
+  const nextBtn = document.getElementById('upload-step2-next');
+  if (!val) { prev.classList.add('hidden'); err.classList.add('hidden'); nextBtn.disabled = true; return; }
   try {
     const data = JSON.parse(val);
     if (data.grid) {
-      prev.classList.remove('hidden');
-      document.getElementById('upload-preview-name').textContent = data.name || 'Untitled';
+      prev.classList.remove('hidden'); err.classList.add('hidden'); nextBtn.disabled = false;
+      document.getElementById('upload-preview-name').textContent = '📦 ' + (data.name || 'Untitled');
       const coins = (data.coins||[]).length, enemies = (data.enemies||[]).length;
-      document.getElementById('upload-preview-meta').textContent = `${data.COLS||28}×${data.ROWS||18} · ${coins} coins · ${enemies} enemies`;
-    } else prev.classList.add('hidden');
-  } catch { prev.classList.add('hidden'); }
+      document.getElementById('upload-preview-meta').textContent =
+        `${data.COLS||28}×${data.ROWS||18} · ${coins} coin${coins!==1?'s':''} · ${enemies} enem${enemies!==1?'ies':'y'}`;
+    } else { prev.classList.add('hidden'); err.classList.remove('hidden'); nextBtn.disabled = true; }
+  } catch { prev.classList.add('hidden'); err.classList.remove('hidden'); nextBtn.disabled = true; }
 });
+
+document.getElementById('upload-step2-next').addEventListener('click', () => showUploadStep(3));
 
 document.getElementById('upload-btn-submit').addEventListener('click', async () => {
   const val = document.getElementById('upload-textarea').value.trim();
-  if (!val) { alert('Please paste your level JSON.'); return; }
   let levelData;
   try {
     levelData = JSON.parse(val);
-    if (!levelData.grid) throw new Error('Not a valid level.');
-  } catch(e) { alert('Invalid JSON: ' + e.message); return; }
+    if (!levelData.grid) throw new Error('bad level');
+  } catch { showUploadStep(2); return; }
 
-  const authorName = prompt('Your name (optional, shown on the level):') || 'Anonymous';
+  const authorName = document.getElementById('upload-author').value.trim() || 'Anonymous';
+  const manualBlobId = document.getElementById('upload-collection-id').value.trim();
   levelData.author = authorName;
 
   const btn = document.getElementById('upload-btn-submit');
-  btn.textContent = 'Uploading...'; btn.disabled = true;
+  btn.textContent = '⏳ Uploading…'; btn.disabled = true;
 
   try {
-    let blobId = localStorage.getItem('whg-blob-id');
+    let blobId = manualBlobId || localStorage.getItem('dodgefield-blob-id');
     if (!blobId) {
-      // Create new blob
       const resp = await fetch(JSONBLOB_BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ levels: [levelData] })
       });
-      if (!resp.ok) throw new Error('Upload failed');
+      if (!resp.ok) throw new Error('Server error ' + resp.status);
       const url = resp.headers.get('Location') || '';
       blobId = url.split('/').pop();
-      localStorage.setItem('whg-blob-id', blobId);
+      localStorage.setItem('dodgefield-blob-id', blobId);
       onlineLevels = [levelData];
     } else {
-      // Append to existing blob
+      // Load current levels first to avoid overwriting
+      try {
+        const getResp = await fetch(`${JSONBLOB_BASE}/${blobId}`, { headers: { 'Accept': 'application/json' } });
+        if (getResp.ok) { const d = await getResp.json(); onlineLevels = d.levels || []; }
+      } catch {}
       onlineLevels.push(levelData);
-      const resp = await fetch(`${JSONBLOB_BASE}/${blobId}`, {
+      const putResp = await fetch(`${JSONBLOB_BASE}/${blobId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ levels: onlineLevels })
       });
-      if (!resp.ok) throw new Error('Update failed');
+      if (!putResp.ok) throw new Error('Server error ' + putResp.status);
+      localStorage.setItem('dodgefield-blob-id', blobId);
     }
-    document.getElementById('upload-modal').classList.add('hidden');
-    alert(`Level uploaded! Share this ID with friends so they can see your levels:\n\n${blobId}\n\n(Paste it in the Online > Connect to Collection field)`);
+    // Show success step
+    document.getElementById('upload-success-id').textContent = blobId;
+    showUploadStep(4);
     renderOnlineLevels();
   } catch(e) {
-    alert('Upload failed: ' + e.message);
+    alert('Upload failed: ' + e.message + '\n\nMake sure you\'re connected to the internet.');
   } finally {
-    btn.textContent = 'Upload'; btn.disabled = false;
+    btn.textContent = '🚀 Publish!'; btn.disabled = false;
   }
 });
 
-// Allow connecting to someone else's blob
-function addConnectButton() {
-  const btn = document.createElement('button');
-  btn.className = 'home-action-btn';
-  btn.textContent = '🔗 Connect';
-  btn.title = 'Connect to a shared level collection by ID';
-  btn.addEventListener('click', () => {
-    const id = prompt('Enter the Collection ID to connect to:');
-    if (id && id.trim()) {
-      localStorage.setItem('whg-blob-id', id.trim());
-      loadOnlineLevels();
-    }
-  });
-  document.getElementById('online-screen').querySelector('#home-header-actions').prepend(btn);
-}
-// Run after DOM ready
-addConnectButton();
+document.getElementById('upload-btn-copy-id').addEventListener('click', () => {
+  const id = document.getElementById('upload-success-id').textContent;
+  navigator.clipboard.writeText(id).catch(() => {});
+  document.getElementById('upload-btn-copy-id').textContent = '✅ Copied!';
+  setTimeout(() => document.getElementById('upload-btn-copy-id').textContent = '📋 Copy ID', 2000);
+});
+document.getElementById('upload-btn-done').addEventListener('click', closeUploadWizard);
+
+// Connect to someone's collection
+document.getElementById('online-btn-connect').addEventListener('click', () => {
+  const id = prompt('Enter the Collection ID you want to connect to:');
+  if (id && id.trim()) {
+    localStorage.setItem('dodgefield-blob-id', id.trim());
+    loadOnlineLevels();
+  }
+});
 
 function init() {
   levelCollection = [];
