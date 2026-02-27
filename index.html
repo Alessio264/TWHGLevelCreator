@@ -3,61 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>World's Hardest Game – Level Editor</title>
+  <title>Dodgefield – Level Editor</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ===== HOME SCREEN ===== -->
+  <!-- ===== MAIN MENU ===== -->
   <div id="home-screen">
     <div id="home-bg"></div>
     <div id="home-content">
+      <div id="menu-logo-area">
+        <div id="menu-logo-word">DODGEFIELD</div>
+        <div id="menu-logo-sub">LEVEL EDITOR</div>
+      </div>
+      <div id="menu-buttons">
+        <button id="home-btn-create" class="menu-btn menu-btn-create">
+          <span class="menu-btn-icon">✏</span>
+          <span class="menu-btn-label">CREATE</span>
+          <span class="menu-btn-desc">Build &amp; play your own levels</span>
+        </button>
+        <button id="home-btn-online" class="menu-btn menu-btn-online">
+          <span class="menu-btn-icon">🌐</span>
+          <span class="menu-btn-label">ONLINE</span>
+          <span class="menu-btn-desc">Play community levels</span>
+        </button>
+      </div>
+      <div id="menu-footer">
+        WASD / Arrow keys &nbsp;·&nbsp; Collect coins &nbsp;·&nbsp; Reach the green goal &nbsp;·&nbsp; Don't touch the blue dots
+      </div>
+    </div>
+  </div>
 
+  <!-- ===== CREATE SCREEN (my levels list) ===== -->
+  <div id="create-screen" class="hidden">
+    <div id="home-bg"></div>
+    <div id="home-content">
       <div id="home-header">
         <div id="home-logo">
-          <span class="home-logo-small">THE WORLD'S</span>
-          <span class="home-logo-big">HARDEST GAME</span>
-          <span class="home-logo-sub">LEVEL EDITOR</span>
+          <button class="home-action-btn back-btn" id="create-btn-back">← Menu</button>
+          <div id="home-logo-inner">
+            <span class="home-logo-big">DODGEFIELD</span>
+            <span class="home-logo-sub-tag">MY LEVELS</span>
+          </div>
         </div>
         <div id="home-header-actions">
           <button class="home-action-btn" id="home-btn-import">&#11014; Import</button>
           <button class="home-action-btn" id="home-btn-save-all">&#11015; Export All</button>
         </div>
       </div>
-
       <div id="home-main">
-
-        <!-- Big action buttons -->
-        <div id="home-cta-row">
-          <button id="home-btn-create" class="home-cta-btn">
-            <span class="home-cta-icon">✏</span>
-            <span class="home-cta-label">CREATE</span>
-            <span class="home-cta-sub">Build your own level</span>
-          </button>
-          <button id="home-btn-online" class="home-cta-btn online-btn">
-            <span class="home-cta-icon">🌐</span>
-            <span class="home-cta-label">ONLINE</span>
-            <span class="home-cta-sub">Play community levels</span>
-          </button>
-        </div>
-
         <div id="home-levels-panel">
           <div id="home-levels-header">
             <span id="home-levels-count">YOUR LEVELS</span>
           </div>
-
           <div id="home-levels-list"></div>
-
           <div id="home-empty" class="hidden">
-            <div id="home-empty-icon">&#127918;</div>
-            <div id="home-empty-text">No levels yet.<br>Create your first one below!</div>
+            <div class="home-empty-icon">🎮</div>
+            <div class="home-empty-text">No levels yet.<br>Hit the button below to make your first one!</div>
           </div>
-
           <button id="home-btn-new">+ NEW LEVEL</button>
         </div>
-
       </div>
-
     </div>
   </div>
 
@@ -68,8 +74,8 @@
       <div id="game-title">
         <button id="btn-home" title="Back to Home">⌂</button>
         <button id="btn-sidebar-toggle" title="Toggle Sidebar (Tab)">☰</button>
-        <span class="title-small">THE WORLD'S</span>
-        <span class="title-big">HARDEST GAME</span>
+        <span class="title-big">DODGEFIELD</span>
+        <span class="title-small">EDITOR</span>
       </div>
       <div id="topbar-center">
         <input type="text" id="current-level-name-input" maxlength="40" placeholder="Level name…" />
@@ -84,7 +90,6 @@
     </header>
 
     <div id="main-layout">
-
       <aside id="toolbar">
         <div id="toolbar-inner">
 
@@ -93,72 +98,58 @@
             <div class="tool-grid">
               <button class="tool-btn active" data-tool="wall">
                 <span class="tool-swatch" style="background:#1a1a2e;"></span>
-                <span class="tool-label">Wall</span>
-                <span class="tool-shortcut">1</span>
+                <span class="tool-label">Wall</span><span class="tool-shortcut">1</span>
               </button>
               <button class="tool-btn" data-tool="erase">
                 <span class="tool-swatch erase-swatch"></span>
-                <span class="tool-label">Erase</span>
-                <span class="tool-shortcut">2</span>
+                <span class="tool-label">Erase</span><span class="tool-shortcut">2</span>
               </button>
               <button class="tool-btn" data-tool="goal">
                 <span class="tool-swatch" style="background:#28a845;"></span>
-                <span class="tool-label">Goal</span>
-                <span class="tool-shortcut">3</span>
+                <span class="tool-label">Goal</span><span class="tool-shortcut">3</span>
               </button>
               <button class="tool-btn" data-tool="player">
                 <span class="tool-swatch" style="background:#e03030;"></span>
-                <span class="tool-label">Spawn</span>
-                <span class="tool-shortcut">4</span>
+                <span class="tool-label">Spawn</span><span class="tool-shortcut">4</span>
               </button>
               <button class="tool-btn" data-tool="coin">
                 <span class="tool-circle" style="background:#f0c020;"></span>
-                <span class="tool-label">Coin</span>
-                <span class="tool-shortcut">5</span>
+                <span class="tool-label">Coin</span><span class="tool-shortcut">5</span>
               </button>
               <button class="tool-btn" data-tool="enemy">
                 <span class="tool-circle" style="background:#1a3acc;"></span>
-                <span class="tool-label">Enemy</span>
-                <span class="tool-shortcut">6</span>
+                <span class="tool-label">Enemy</span><span class="tool-shortcut">6</span>
               </button>
               <button class="tool-btn" data-tool="key">
                 <span class="tool-key-shape"></span>
-                <span class="tool-label">Key</span>
-                <span class="tool-shortcut">7</span>
+                <span class="tool-label">Key</span><span class="tool-shortcut">7</span>
               </button>
               <button class="tool-btn" data-tool="door">
                 <span class="tool-swatch" style="background:#e8c200;opacity:0.85;"></span>
-                <span class="tool-label">Door</span>
-                <span class="tool-shortcut">8</span>
+                <span class="tool-label">Door</span><span class="tool-shortcut">8</span>
               </button>
               <button class="tool-btn" data-tool="ice">
-                <span class="tool-swatch" style="background:#a0e0ff; border:2px solid #60b0e0;"></span>
-                <span class="tool-label">Ice</span>
-                <span class="tool-shortcut">9</span>
+                <span class="tool-swatch" style="background:#a0e0ff;border:2px solid #60b0e0;"></span>
+                <span class="tool-label">Ice</span><span class="tool-shortcut">9</span>
               </button>
               <button class="tool-btn" data-tool="checkpoint">
                 <span class="tool-swatch" style="background:#ff8c00;"></span>
-                <span class="tool-label">Check</span>
-                <span class="tool-shortcut">K</span>
+                <span class="tool-label">Check</span><span class="tool-shortcut">K</span>
               </button>
               <button class="tool-btn" data-tool="select">
                 <span class="tool-select-icon">▶</span>
-                <span class="tool-label">Select</span>
-                <span class="tool-shortcut">S</span>
+                <span class="tool-label">Select</span><span class="tool-shortcut">S</span>
               </button>
               <button class="tool-btn" data-tool="fill">
                 <span class="tool-fill-icon">◢</span>
-                <span class="tool-label">Fill</span>
-                <span class="tool-shortcut">F</span>
+                <span class="tool-label">Fill</span><span class="tool-shortcut">F</span>
               </button>
             </div>
           </div>
 
           <div class="toolbar-divider"></div>
 
-          <!-- Context panel -->
           <div id="context-panel">
-
             <div class="panel-block" id="panel-default">
               <p class="toolbar-section-label">TIPS</p>
               <p class="inst-text">🖱 Click &amp; drag to paint.</p>
@@ -175,7 +166,6 @@
                 <button class="tab-btn active" id="tab-linear">Linear</button>
                 <button class="tab-btn" id="tab-orbit">Orbit</button>
               </div>
-
               <div id="linear-settings">
                 <button class="action-btn full-width" id="btn-set-path">📍 Set Path (A → B)</button>
                 <p id="path-hint" class="hint-text hidden"></p>
@@ -183,65 +173,54 @@
                   <span class="info-label">Path length</span>
                   <span id="path-readout-text" class="info-val"></span>
                 </div>
-
                 <label class="panel-label">Waypoints</label>
                 <button class="action-btn full-width" id="btn-add-keyframe">+ Add Waypoint</button>
                 <div id="keyframes-list"></div>
-
                 <label class="panel-label">Travel time (seconds)</label>
                 <div class="slider-number-row">
                   <input type="range" id="enemy-duration" min="0.25" max="255" step="0.25" value="3" class="panel-range" />
                   <input type="number" id="enemy-duration-num" min="0.25" max="255" step="0.25" value="3" class="num-input" />
                 </div>
-
                 <label class="panel-label">Start offset</label>
                 <div class="slider-number-row">
                   <input type="range" id="enemy-phase" min="0" max="1" step="0.01" value="0" class="panel-range" />
                   <input type="number" id="enemy-phase-num" min="0" max="1" step="0.01" value="0" class="num-input" />
                 </div>
-
                 <label class="panel-label">Mode</label>
                 <div class="btn-row">
                   <button class="choice-btn active" id="mode-bounce">Bounce</button>
                   <button class="choice-btn" id="mode-loop">Loop</button>
                 </div>
-
                 <label class="panel-label">Start direction</label>
                 <div class="btn-row">
                   <button class="dir-btn active" id="dir-fwd">→ Forward</button>
                   <button class="dir-btn" id="dir-bwd">← Backward</button>
                 </div>
               </div>
-
               <div id="orbit-settings" class="hidden">
                 <button class="action-btn full-width" id="btn-set-center">🎯 Set Center Point</button>
                 <p id="center-hint" class="hint-text hidden"></p>
-
                 <label class="panel-label">Radius (tiles, 0.25 snap)</label>
                 <div class="slider-number-row">
                   <input type="range" id="orbit-radius" min="0.25" max="10" step="0.25" value="3" class="panel-range" />
                   <input type="number" id="orbit-radius-num" min="0.25" max="10" step="0.25" value="3" class="num-input" />
                 </div>
-
                 <label class="panel-label">Revolution time (seconds)</label>
                 <div class="slider-number-row">
                   <input type="range" id="orbit-duration" min="0.25" max="255" step="0.25" value="4" class="panel-range" />
                   <input type="number" id="orbit-duration-num" min="0.25" max="255" step="0.25" value="4" class="num-input" />
                 </div>
-
                 <label class="panel-label">Start angle (°)</label>
                 <div class="slider-number-row">
                   <input type="range" id="orbit-angle" min="0" max="355" step="5" value="0" class="panel-range" />
                   <input type="number" id="orbit-angle-num" min="0" max="355" step="5" value="0" class="num-input" />
                 </div>
-
                 <label class="panel-label">Direction</label>
                 <div class="btn-row">
                   <button class="choice-btn active" id="orbit-cw">↻ CW</button>
                   <button class="choice-btn" id="orbit-ccw">↺ CCW</button>
                 </div>
               </div>
-
               <button class="action-btn danger" id="btn-delete-enemy">🗑 Delete Enemy</button>
             </div>
 
@@ -274,14 +253,12 @@
               <p class="inst-text" style="margin-top:4px;color:#888;">Select a key then click "Link a Door".</p>
               <button class="action-btn danger" id="btn-delete-door">🗑 Remove Door</button>
             </div>
-
           </div>
 
           <div class="toolbar-divider"></div>
 
           <div id="level-settings-section">
             <p class="toolbar-section-label">LEVEL SETTINGS</p>
-
             <label class="panel-label">Time Limit</label>
             <div class="btn-row" style="margin-bottom:4px;">
               <button class="choice-btn active" id="timelimit-off">Off</button>
@@ -291,7 +268,6 @@
               <input type="range" id="timelimit" min="5" max="600" step="5" value="60" class="panel-range" />
               <input type="number" id="timelimit-num" min="5" max="9999" step="1" value="60" class="num-input" />
             </div>
-
             <label class="panel-label">Player Speed</label>
             <div class="slider-number-row">
               <input type="range" id="speed" min="40" max="300" step="10" value="120" class="panel-range" />
@@ -304,7 +280,7 @@
           <div id="how-to-play">
             <p class="toolbar-section-label">HOW TO PLAY</p>
             <p class="inst-text">Collect all coins → reach green goal.</p>
-            <p class="inst-text">Blue balls = instant death.</p>
+            <p class="inst-text">Blue dots = instant death.</p>
             <p class="inst-text">WASD / Arrow keys to move.</p>
             <p class="inst-text">R = reset attempt · Esc = stop.</p>
           </div>
@@ -338,13 +314,12 @@
             <div id="win-actions">
               <button class="action-btn primary" id="btn-win-edit">← Edit</button>
               <button class="action-btn" id="btn-win-retry">↺ Retry</button>
-              <button class="action-btn" id="btn-win-home">⌂ Home</button>
+              <button class="action-btn" id="btn-win-home">⌂ Menu</button>
             </div>
           </div>
         </div>
         <div id="death-flash"></div>
       </main>
-
     </div>
 
     <footer id="statusbar">
@@ -356,7 +331,7 @@
 
   </div>
 
-  <!-- Modal -->
+  <!-- Generic Modal -->
   <div id="modal-overlay" class="hidden">
     <div id="modal-box">
       <h2 id="modal-title"></h2>
@@ -368,17 +343,21 @@
     </div>
   </div>
 
-  <!-- Online screen -->
+  <!-- ===== ONLINE SCREEN ===== -->
   <div id="online-screen" class="hidden">
     <div id="home-bg"></div>
     <div id="home-content">
       <div id="home-header">
         <div id="home-logo">
-          <button class="home-action-btn" id="online-btn-back">← Back</button>
-          <span class="home-logo-big" style="margin-left:10px;">ONLINE LEVELS</span>
+          <button class="home-action-btn back-btn" id="online-btn-back">← Menu</button>
+          <div id="home-logo-inner">
+            <span class="home-logo-big">DODGEFIELD</span>
+            <span class="home-logo-sub-tag">ONLINE</span>
+          </div>
         </div>
         <div id="home-header-actions">
-          <button class="home-action-btn" id="online-btn-upload">⬆ Upload My Level</button>
+          <button class="home-action-btn" id="online-btn-connect">🔗 Connect</button>
+          <button class="home-action-btn upload-btn-header" id="online-btn-upload">⬆ Upload Level</button>
         </div>
       </div>
       <div id="home-main">
@@ -388,34 +367,117 @@
           </div>
           <div id="online-levels-list"></div>
           <div id="online-empty" class="hidden">
-            <div id="home-empty-icon">🌐</div>
-            <div id="home-empty-text">No online levels yet.<br>Be the first to upload one!</div>
+            <div class="home-empty-icon">🌐</div>
+            <div class="home-empty-text">
+              No levels loaded yet.<br><br>
+              <strong>⬆ Upload Level</strong> — share one of your levels<br>
+              <strong>🔗 Connect</strong> — load levels by collection ID
+            </div>
           </div>
           <div id="online-loading" class="hidden">
-            <div id="home-empty-icon">⏳</div>
-            <div id="home-empty-text">Loading levels...</div>
+            <div class="home-empty-icon">⏳</div>
+            <div class="home-empty-text">Loading levels…</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Upload modal -->
+  <!-- ===== UPLOAD WIZARD ===== -->
   <div id="upload-modal" class="hidden">
     <div id="upload-box">
-      <div id="upload-header">UPLOAD LEVEL</div>
-      <div id="upload-body">
-        <p class="inst-text" style="margin-bottom:10px;">Paste your exported level JSON below to share it with the community.</p>
-        <textarea id="upload-textarea" spellcheck="false" placeholder="Paste level JSON here..."></textarea>
-        <div id="upload-preview" class="hidden">
-          <div id="upload-preview-name"></div>
-          <div id="upload-preview-meta"></div>
+
+      <!-- Step 1: instructions -->
+      <div id="upload-step-1">
+        <div class="upload-header">
+          <span class="upload-step-tag">STEP 1 OF 3</span>
+          EXPORT YOUR LEVEL FIRST
+        </div>
+        <div class="upload-body">
+          <p class="upload-hint-top">Before uploading, you need to export your level as JSON from the editor. Here's how:</p>
+          <div class="upload-how-row">
+            <div class="upload-how-num">1</div>
+            <div class="upload-how-text">Go back to <strong>Create</strong> and open the level you want to share.</div>
+          </div>
+          <div class="upload-how-row">
+            <div class="upload-how-num">2</div>
+            <div class="upload-how-text">Click the <strong>⬇ Export</strong> button in the top-right of the editor.</div>
+          </div>
+          <div class="upload-how-row">
+            <div class="upload-how-num">3</div>
+            <div class="upload-how-text">In the popup, click <strong>Copy to Clipboard</strong>.</div>
+          </div>
+          <div class="upload-how-row">
+            <div class="upload-how-num">4</div>
+            <div class="upload-how-text">Come back here (Online → Upload Level) and click <strong>Next</strong>.</div>
+          </div>
+        </div>
+        <div class="upload-actions">
+          <button class="action-btn" id="upload-btn-cancel-1">Cancel</button>
+          <button class="action-btn primary" id="upload-step1-next">I copied it → Next</button>
         </div>
       </div>
-      <div id="upload-actions">
-        <button class="action-btn" id="upload-btn-cancel">Cancel</button>
-        <button class="action-btn primary" id="upload-btn-submit">Upload</button>
+
+      <!-- Step 2: paste JSON -->
+      <div id="upload-step-2" class="hidden">
+        <div class="upload-header">
+          <span class="upload-step-tag">STEP 2 OF 3</span>
+          PASTE YOUR LEVEL
+        </div>
+        <div class="upload-body">
+          <p class="upload-label">Paste the JSON you copied:</p>
+          <textarea id="upload-textarea" spellcheck="false" placeholder='Paste here… (it starts with { "id": … "name": … "grid": … })&#10;&#10;Tip: Ctrl+V to paste'></textarea>
+          <div id="upload-preview" class="hidden">
+            <div id="upload-preview-icon">✅</div>
+            <div>
+              <div id="upload-preview-name"></div>
+              <div id="upload-preview-meta"></div>
+            </div>
+          </div>
+          <div id="upload-error" class="hidden">❌ That doesn't look right. Make sure you copied the full text from the Export popup in the editor.</div>
+        </div>
+        <div class="upload-actions">
+          <button class="action-btn" id="upload-step2-back">← Back</button>
+          <button class="action-btn primary" id="upload-step2-next" disabled>Looks good → Next</button>
+        </div>
       </div>
+
+      <!-- Step 3: author + collection -->
+      <div id="upload-step-3" class="hidden">
+        <div class="upload-header">
+          <span class="upload-step-tag">STEP 3 OF 3</span>
+          PUBLISH
+        </div>
+        <div class="upload-body">
+          <label class="upload-label">Your name (shown on the level):</label>
+          <input type="text" id="upload-author" placeholder="Anonymous" maxlength="30" />
+          <label class="upload-label" style="margin-top:12px;">Collection ID <span style="font-weight:400;opacity:0.7;">(optional)</span>:</label>
+          <p class="upload-hint">Already uploaded before? Paste your Collection ID here to add this level to your existing collection. Leave blank to create a new one.</p>
+          <input type="text" id="upload-collection-id" placeholder="e.g. 1234567890abc… (leave blank if new)" />
+        </div>
+        <div class="upload-actions">
+          <button class="action-btn" id="upload-step3-back">← Back</button>
+          <button class="action-btn primary" id="upload-btn-submit">🚀 Publish!</button>
+        </div>
+      </div>
+
+      <!-- Step 4: success -->
+      <div id="upload-step-4" class="hidden">
+        <div class="upload-header">🎉 LEVEL PUBLISHED!</div>
+        <div class="upload-body">
+          <p class="upload-label" style="margin-bottom:6px;">Your Collection ID:</p>
+          <div id="upload-success-id"></div>
+          <p class="upload-hint" style="margin-top:10px;">
+            <strong>Save this ID!</strong> Share it with friends so they can load your levels via <em>Online → Connect</em>.
+            You'll also need it next time you want to add more levels to the same collection.
+          </p>
+        </div>
+        <div class="upload-actions">
+          <button class="action-btn primary" id="upload-btn-copy-id">📋 Copy ID</button>
+          <button class="action-btn" id="upload-btn-done">Done</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
